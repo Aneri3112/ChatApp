@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, ImageBackground, TouchableOpacity, Pressable, Image} from "react-native";
-import BackgroundImage from "../img/Background_Image.png";
-//import Icon from "../img/icon_image.svg";
+import { View, Text, TextInput, StyleSheet, ImageBackground, TouchableOpacity, Pressable, Image, KeyboardAvoidingView} from "react-native";
 
+// Importing the default background image from the assets folder
+import BackgroundImage from "../img/Background_Image.png";
+
+// Create constant that holds background colors for Chat Screen
 const colors = {
   black: "#090C08",
   purple: "#474056",
@@ -14,28 +16,20 @@ export default function Start(props) {
   let [name, setName] = useState();
   let [backgroundColor, setColor] = useState();
 
-  /*constructor(props) {
-    super(props);
-    this.state= { 
-      name: "",
-      backgroundColor: colors.black
-    };
-  }
-
-  // function to update the state with the new background color for Chat Screen chosen by the user
-  changeBackgroundColor = (newColor) => {
-    this.setState({ backgroundColor: newColor });
-  };*/
-
   return (
+    // Components to create the color arrays, titles and the app's colors
       <View style= {styles.container}>
         <ImageBackground
           source={BackgroundImage}
           resizeMode='cover'
           style={styles.image}
         >
-        <Text style={styles.title}>Chat App</Text>
-    
+
+        <View style={styles.titleBox}>
+            <Text style={styles.title}>Chat App</Text>
+          </View>
+
+        {/* Input box to set user name passed to chat screen */}
         <View style={styles.box}>
           <View style={styles.SectionStyle}>
           <Image source={require('../img/icon.png')} style={styles.ImageStyle}  />
@@ -45,12 +39,14 @@ export default function Start(props) {
             placeholder="Type here...."
           />
         </View>
+        {/* Allow user to choose a background color for the chat screen */}
         <View style={styles.colorBox}>
           <Text style={styles.chooseColor}>
             Pick your background color!
           </Text>
         </View>
 
+        {/* colors to change the background are here! */}
         <View style={styles.colorArray}>
 
         <TouchableOpacity
@@ -70,7 +66,7 @@ export default function Start(props) {
           onPress={() => setColor(colors.green)}
         />
         </View> 
-        
+            {/* Open chatroom, passing user name and background color as props */}
             <Pressable
               onPress={() =>
                 props.navigation.navigate("Chat", {
@@ -86,17 +82,20 @@ export default function Start(props) {
                 },
                 styles.button
               ]}
-
             >
-              <Text style={styles.buttonText}>Start Chatting</Text>
+              
+            <Text style={styles.buttonText}>Start Chatting</Text>
+
+            {/*This will allow the user to click on a button and be redirected to the chat page */}
             </Pressable>
             </View>
        </ImageBackground>
+       {Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null}
       </View>
     );
 }
 
-
+// Creating the app's stylesheet, fixing sizes, centering items, changing colors
 const styles = StyleSheet.create ({
   container: {
     flex: 1,
@@ -106,6 +105,12 @@ const styles = StyleSheet.create ({
     flexDirection: 'column',
     justifyContent: 'space-evenly',
     alignItems: 'center',
+  },
+  titleBox: {
+    height: "40%",
+    width: "88%",
+    alignItems: "center",
+    paddingTop: 100,
   },
   title:{
     fontSize: 45,
@@ -155,27 +160,25 @@ const styles = StyleSheet.create ({
     fontSize: 16,
     fontWeight: '300',
     color: '#757083',
-    //opacity: '50',
     width: '80%', 
     borderColor: "gray", 
     borderWidth: 1,
   },
   colorArray: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    width: "80%",
+    justifyContent: "space-evenly",
+    width: "88%",
   },
 
   colorbutton: {
-    width: 50,
-    height: 50,
-    borderRadius: 30,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
 
   button: {
     width: "88%",
-    height: 70,
-    borderRadius: 8,
+    height: 50,
     alignItems: "center",
     backgroundColor: "#757083",
     justifyContent: "center",

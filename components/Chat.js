@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Text} from 'react-native';
-//import GiftedChat
-import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function Chat(props) {
     let { name, backgroundColor } = props.route.params;
+
+    // Set the screen title to the user name entered in the start screen
     useEffect(() => {
       props.navigation.setOptions({ title: name });
     }, [])
