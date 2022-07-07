@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, Text} from 'react-native';
-
+//import GiftedChat
+import { GiftedChat } from 'react-native-gifted-chat'
 
 export default function Chat(props) {
     let { name, backgroundColor } = props.route.params;
-    props.navigation.setOptions({ title: name });
+    useEffect(() => {
+      props.navigation.setOptions({ title: name });
+    }, [])
+    
 
     return (
       <View style={[{ backgroundColor: backgroundColor}, styles.conatainer]}>
