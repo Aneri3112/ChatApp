@@ -122,8 +122,11 @@ const styles = StyleSheet.create ({
     width: '100%',
     backgroundColor: 'white',
     alignItems: 'center',
-    height: '44%',
-    justifyContent: 'space-evenly',
+    height: '48%',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+    padding: 10,
+    minHeight: '48%',
   },
 
   ImageStyle: {
@@ -145,7 +148,6 @@ const styles = StyleSheet.create ({
     fontSize: 16,
     fontWeight: "300",
     color: "#757083",
-    //opacity: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -166,14 +168,14 @@ const styles = StyleSheet.create ({
   },
   colorArray: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
     width: "88%",
   },
 
   colorbutton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 25,
   },
 
   button: {
@@ -188,5 +190,6 @@ const styles = StyleSheet.create ({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+    marginTop: 5,
   },
 })
