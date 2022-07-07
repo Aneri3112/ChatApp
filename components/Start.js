@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, ImageBackground, TouchableOpacity, Pressable, Image} from "react-native";
 import BackgroundImage from "../img/Background_Image.png";
 //import Icon from "../img/icon_image.svg";
@@ -10,8 +10,11 @@ const colors = {
   green: "#B9C6AE",
 };
 
-export default class Start extends React.Component {
-  constructor(props) {
+export default function Start(props) {
+  let [name, setName] = useState();
+  let [backgroundColor, setColor] = useState();
+
+  /*constructor(props) {
     super(props);
     this.state= { 
       name: "",
@@ -20,13 +23,11 @@ export default class Start extends React.Component {
   }
 
   // function to update the state with the new background color for Chat Screen chosen by the user
-  changeBgColor = (newColor) => {
+  changeBackgroundColor = (newColor) => {
     this.setState({ backgroundColor: newColor });
-  };
+  };*/
 
-
-  render() {
-    return (
+  return (
       <View style= {styles.container}>
         <ImageBackground
           source={BackgroundImage}
@@ -39,45 +40,53 @@ export default class Start extends React.Component {
           <View style={styles.SectionStyle}>
           <Image source={require('../img/icon.png')} style={styles.ImageStyle}  />
           <TextInput
-            onChangeText={(name) => this.setState({name})}
-            value={this.state.name}
+            onChangeText={(name) => setName(name)}
+            value={name}
             placeholder="Type here...."
           />
         </View>
         <View style={styles.colorBox}>
           <Text style={styles.chooseColor}>
-          {" "}
-            Pick your background color!{" "}
+            Pick your background color!
           </Text>
         </View>
 
         <View style={styles.colorArray}>
+
         <TouchableOpacity
           style={[{ backgroundColor: colors.black }, styles.colorbutton]}
-          onPress={() => this.changeBgColor(colors.black)}
+          onPress={() => setColor(colors.black)}
         />
         <TouchableOpacity
           style={[{ backgroundColor: colors.purple }, styles.colorbutton]}
-          onPress={() => this.changeBgColor(colors.purple)}
+          onPress={() => setColor(colors.purple)}
         />
         <TouchableOpacity
           style={[{ backgroundColor: colors.grey }, styles.colorbutton]}
-          onPress={() => this.changeBgColor(colors.grey)}
+          onPress={() => setColor(colors.grey)}
         />
         <TouchableOpacity
           style={[{ backgroundColor: colors.green }, styles.colorbutton]}
-          onPress={() => this.changeBgColor(colors.green)}
+          onPress={() => setColor(colors.green)}
         />
         </View> 
         
             <Pressable
-              style={styles.button}
               onPress={() =>
-                this.props.navigation.navigate("Chat", {
-                  name: this.state.name,
-                  backgroundColor: this.state.backgroundColor,
+                props.navigation.navigate("Chat", {
+                  name: name,
+                  backgroundColor: backgroundColor,
                 })
               }
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed
+                    ? '#585563'
+                    : '#757083'
+                },
+                styles.button
+              ]}
+
             >
               <Text style={styles.buttonText}>Start Chatting</Text>
             </Pressable>
@@ -85,8 +94,8 @@ export default class Start extends React.Component {
        </ImageBackground>
       </View>
     );
-  }
 }
+
 
 const styles = StyleSheet.create ({
   container: {
