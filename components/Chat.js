@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Platform, KeyboardAvoidingView, LogBox} from 'react-native';
+import { StyleSheet, View, Platform, KeyboardAvoidingView } from 'react-native';
 //import GiftedChat
-import { GiftedChat, Bubble } from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from '@react-native-community/netinfo';
 
 const firebase = require('firebase');
 require('firebase/firestore');
@@ -19,15 +21,6 @@ export default class Chat extends Component {
       },
     }
     
-    // to remove warning message in the consile
-    LogBox.ignoreLogs([
-      "Setting a timer",
-      "Warning: ...",
-      "Console Warning: ...",
-      "undefined",
-      "Animated.event now requires a second argument for options",
-      "Possible Unhandled Promise Rejection (id:0)",
-    ]);
 
     // Dadabase credentials
     const firebaseConfig = {
@@ -56,14 +49,23 @@ export default class Chat extends Component {
     let { name} = this.props.route.params;
     this.props.navigation.setOptions({ title: name });
 
+     // An app must be online to access Google Firebase, offline users can't be authenticated
+    // To find out the user's connection status
+    NetInfo.fetch().then((connection) => {
+      if (connection.isConnected) {
+        this.setState({
+          amIConnected: true,
+        });
+        console.log("online");
+
     // Reference to load messages from Firebase
     this.referenceChatMessages = firebase.firestore().collection('messages');
     this.unsubscribe = this.referenceChatMessages.onSnapshot(this.onCollectionUpdate);
 
     // Authenticate user anonymously
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) {
-        firebase.auth().signInAnonymously();
+        await firebase.auth().signInAnonymously();
       }
 
       // update user state with current user data
@@ -82,7 +84,17 @@ export default class Chat extends Component {
         .orderBy('createdAt', 'desc')
         .onSnapshot(this.onCollectionUpdate);
     });    
-  }   
+  } else {
+    this.setState({
+      amIConnected: false,
+    });
+    console.log("offline");
+
+    // to retrieve chat messages from asyncStorage
+    this.getMessages();
+    }
+  });
+  }  
 
   //Collection Update
   onCollectionUpdate = (querySnapshot) => {
@@ -105,19 +117,61 @@ export default class Chat extends Component {
     this.setState({
       messages,
     });
+    this.saveMessages();
   };  
    
   componentWillUnmount() {
-    this.authUnsubscribe();
-    this.unsubscribe();
+    if (this.state.amIConnected == true) {
+      this.authUnsubscribe();
+      this.unsubscribe();
+    }
+  }  
+
+  async saveMessages() {
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
+  // To read the messages in storage
+  async getMessages() {
+    let messages = "";
+    let userID = "";
+    try {
+      // Asynchronous functions can be paused with await (here, wait for a promise)
+      messages = (await AsyncStorage.getItem("messages")) || [];
+      userID = (await AsyncStorage.getItem("userID")) || "";
+      this.setState({
+        // to convert messages string back into an object:
+        messages: JSON.parse(messages),
+        userID,
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem('messages');
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  componentDidMount() {
+    this.getMessages();
+  }
+
+// callback function used to add messages to current chat window and save it in firebase messages collection database
   onSend(messages = []) {
     this.setState((previousState) => ({
       messages: GiftedChat.append(previousState.messages, messages),
     }),
       () => {
-        this.addMessages();
+        this.saveMessages();
       }
     );
   }
@@ -133,6 +187,14 @@ export default class Chat extends Component {
       createdAt: message.createdAt,
       user: this.state.user,
     });
+  }
+
+  // function to hide input field when offline
+  renderInputToolbar(props) {
+    if (this.state.amIConnected == false) {
+    } else {
+      return <InputToolbar {...props} />;
+    }
   }
 
   //Customize sender bubble color
@@ -154,6 +216,7 @@ export default class Chat extends Component {
     return (
       <View style={[{ backgroundColor: backgroundColor}, styles.conatainer]}>
         <GiftedChat
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderBubble={this.renderBubble.bind(this)}
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
