@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Platform, KeyboardAvoidingView} from 'react-native';
 //import GiftedChat
 import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
-//import AsyncStorage from '@react-native-community/async-storage';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 
@@ -23,16 +23,6 @@ export default class Chat extends Component {
       },
       isConnected: false,
     };
-    
-    // to remove warning message in the consile
-   /* LogBox.ignoreLogs([
-      "Setting a timer",
-      "Warning: ...",
-      "Console Warning: ...",
-      "undefined",
-      "Animated.event now requires a second argument for options",
-      "Possible Unhandled Promise Rejection (id:0)",
-    ]); */
 
     // Dadabase credentials
     const firebaseConfig = {
@@ -89,41 +79,41 @@ export default class Chat extends Component {
       if (connection.isConnected) {
         console.log("online");
         this.setState({
-          amIConnected: true,
+          isConnected: true,
         });
     
-    //this.unsubscribe = this.referenceChatMessages.onSnapshot(this.onCollectionUpdate);
+        //this.unsubscribe = this.referenceChatMessages.onSnapshot(this.onCollectionUpdate);
 
-    // Authenticate user anonymously
-    this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
-      if (!user) {
-        await firebase.auth().signInAnonymously();
-      }
-
-      // update user state with current user data
-      this.setState({
-        uid: user.uid,
-        messages:[],
-          user: {
-            _id: user.uid,
-            name: name,
-            avatar: 'https://i.pinimg.com/564x/51/3c/27/513c27c5cfa8d1b65a60835764fd38d6.jpg',
+        // Authenticate user anonymously
+        this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+          if (!user) {
+            await firebase.auth().signInAnonymously();
           }
+
+          // update user state with current user data
+          this.setState({
+            uid: user.uid,
+            messages:[],
+              user: {
+                _id: user.uid,
+                name: name,
+                avatar: 'https://i.pinimg.com/564x/51/3c/27/513c27c5cfa8d1b65a60835764fd38d6.jpg',
+              }
+            });
+          
+          // listen for update in the collection
+          this.unsubscribe = this.referenceChatMessages
+            .orderBy('createdAt', 'desc')
+            .onSnapshot(this.onCollectionUpdate);
+        });    
+      } else {
+        console.log("offline");
+        this.setState({
+          isConnected: false,
         });
-      
-      // listen for update in the collection
-      this.unsubscribe = this.referenceChatMessages
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(this.onCollectionUpdate);
-    });    
-  } else {
-    console.log("offline");
-    this.setState({
-      amIConnected: false,
+        this.props.navigation.setOptions({ title: `${name} is Offline` });
+      }
     });
-    this.props.navigation.setOptions({ title: `${name} is Offline` });
-  }
-  });
   } 
 
   //Collection Update
@@ -151,7 +141,7 @@ export default class Chat extends Component {
   };  
    
   componentWillUnmount() {
-    if (this.state.amIConnected == true) {
+    if (this.state.isConnected == true) {
       this.unsubscribe();
       this.authUnsubscribe();
     }
@@ -207,7 +197,7 @@ export default class Chat extends Component {
 
   // function to hide input field when offline
   renderInputToolbar(props) {
-    if (this.state.amIConnected == false) {
+    if (this.state.isConnected == false) {
     } else {
       return <InputToolbar {...props} />;
     }
@@ -239,9 +229,6 @@ export default class Chat extends Component {
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}
           user={this.state.user}
-          /*user={{
-            _id: this.state.uid,
-          }}*/
         />  
       
         {/* Avoid keyboard to overlap text messages on older Andriod versions */}
