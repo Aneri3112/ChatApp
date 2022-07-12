@@ -11,8 +11,8 @@ const firebase = require('firebase');
 require('firebase/firestore');
 
 export default class Chat extends Component {
-  constructor(props){
-    super(props);
+  constructor(){
+    super();
     this.state ={
       messages: [],
       uid:0,
@@ -82,7 +82,7 @@ export default class Chat extends Component {
           isConnected: true,
         });
     
-        //this.unsubscribe = this.referenceChatMessages.onSnapshot(this.onCollectionUpdate);
+        this.unsubscribe = this.referenceChatMessages.onSnapshot(this.onCollectionUpdate);
 
         // Authenticate user anonymously
         this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
@@ -104,7 +104,7 @@ export default class Chat extends Component {
           // listen for update in the collection
           this.unsubscribe = this.referenceChatMessages
             .orderBy('createdAt', 'desc')
-            .onSnapshot(this.onCollectionUpdate);
+            .onSnapshot(this.onCollectionUpdate); 
         });    
       } else {
         console.log("offline");
@@ -141,7 +141,7 @@ export default class Chat extends Component {
   };  
    
   componentWillUnmount() {
-    if (this.state.isConnected == true) {
+    if (this.state.isConnected) {
       this.unsubscribe();
       this.authUnsubscribe();
     }
