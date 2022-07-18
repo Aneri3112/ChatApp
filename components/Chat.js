@@ -158,7 +158,6 @@ export default class Chat extends Component {
    
   componentWillUnmount() {
     if (this.state.isConnected) {
-      this._isMounted = true;
       this.unsubscribe();
       this.authUnsubscribe();
     }

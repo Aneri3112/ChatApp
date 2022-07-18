@@ -35,6 +35,7 @@ export default function CustomActions(props){
 					case 2:
 						console.log('user wants to get their location');
 						return getLocation();
+					default:
 				}
 			}
 		);
