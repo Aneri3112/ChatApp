@@ -145,5 +145,8 @@ The aim of this project is to build a chat app for mobile devices using React Na
 
 ## Screenshots
 
-![Livepage](./img/chat2.PNG)
-![Livepage](./img/chat1.PNG)
+<p float="left">
+<img src="./img/chat2.PNG" width="250">
+<img src="./imgIchat1.PNG" width="250">
+</p>
+
