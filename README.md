@@ -140,3 +140,8 @@ The app will provide users with a chat interface and options to share images and
     In order to import the mentioned APIs and tools, make sure to install:<br/>
     expo install expo-location<br/>
     expo install react-native-maps
+
+## Screenshots
+
+![Livepage](./img/chat2.PNG)
+![Livepage](./img/chat1.PNG)
