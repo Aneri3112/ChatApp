@@ -147,6 +147,6 @@ The aim of this project is to build a chat app for mobile devices using React Na
 
 <p float="left">
 <img src="./img/chat2.PNG" width="250">
-<img src="./imgIchat1.PNG" width="250">
+<img src="./img/chat1.PNG" width="250">
 </p>
 
